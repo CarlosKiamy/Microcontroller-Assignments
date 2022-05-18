@@ -126,66 +126,53 @@ int main(void)
 
 	  switch(i){
 	  	  case 0:
-	  		  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-	  				  	  	        dutyCycle*0);
+	  		  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0);
 	  	  break;
 
 		  case 1:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-					  	  	  	  	dutyCycle*0.1);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.1);
 		  break;
 
 		  case 2:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-				  	  	  	  		dutyCycle*0.2);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.2);
 		  break;
 
 		  case 3:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-				  	  	  	  		dutyCycle*0.3);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.3);
 		  break;
 
 		  case 4:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-				  	  	  	    	dutyCycle*0.4);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.4);
 		  break;
 
 		  case 5:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-					  	  	  	  	dutyCycle*0.5);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.5);
 		  break;
 
 		  case 6:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-				  	  	  	    	dutyCycle*0.6);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.6);
 		  break;
 
 		  case 7:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-				  	  	  	    	dutyCycle*0.7);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.7);
 		  break;
 
 		  case 8:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-					  	  	  	  	dutyCycle*0.8);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.8);
 		  break;
 
 		  case 9:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-		 							dutyCycle*0.9);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.9);
 		  break;
 
 		  case 10:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1,
-				  	  	  	    	dutyCycle);
+			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle);
 		  break;
 	  }
 	  sprintf(msg, "%hu\r\n", i);
 	  sprintf(msgT,"%hu\r\n", toggle);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)msg,  strlen(msg),
-			  	  	    HAL_MAX_DELAY);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)msgT, strlen(msgT),
-			  	  	    HAL_MAX_DELAY);
+	  HAL_UART_Transmit(&huart2, (uint8_t*)msg,  strlen(msg),  HAL_MAX_DELAY);
+	  HAL_UART_Transmit(&huart2, (uint8_t*)msgT, strlen(msgT), HAL_MAX_DELAY);
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
