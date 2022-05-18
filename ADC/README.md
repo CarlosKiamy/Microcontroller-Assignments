@@ -17,4 +17,4 @@ IMAGE HERE
 
 - Task 4
 
-o Using the interpolation formulas seen in class, demonstrate analytically the values found in the table of activity 3.
+o Using the interpolation formulas seen in class, demonstrate analytically the values found in the table of task 3.
