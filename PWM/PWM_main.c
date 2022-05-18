@@ -114,12 +114,10 @@ int main(void)
 	  }
 
 	  //increment/decrement buttons
-	  if(toggle==1 && HAL_GPIO_ReadPin(GPIOA, botonB_Pin)==1
-	     && i<10){
+	  if(toggle==1 && HAL_GPIO_ReadPin(GPIOA, botonB_Pin)==1 && i<10){
 		  ++i;
 	  }
-	  if(toggle==0 && HAL_GPIO_ReadPin(GPIOA, botonB_Pin)==1
-		 && i>0){
+	  if(toggle==0 && HAL_GPIO_ReadPin(GPIOA, botonB_Pin)==1 && i>0){
 		  --i;
 	  }
 	  dutyCycle = __HAL_TIM_GET_AUTORELOAD(&htim2);
