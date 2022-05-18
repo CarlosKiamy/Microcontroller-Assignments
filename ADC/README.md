@@ -32,10 +32,14 @@ LED5_Pin, LED6_Pin, LED7_Pin, LED8_Pin, LED9_Pin, LED10_Pin};
 ```
 
 
-The following code does the reading for the ADC measurements.
+The following code does the reading for the ADC measurements:
+
 o HAL_ADC_Start(&hadc1); initializes the ADC, calling the microcontroller pin that was previously assigned.
+
 o HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY); "instructs" the ADC to read the current value via its pin &hadc1.
+
 o raw = HAL_ADC_GetValue(&hadc1); stores the raw data of the ADC in the raw variable
+
 ```
 while (1)
  {
