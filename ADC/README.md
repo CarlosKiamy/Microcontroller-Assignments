@@ -13,7 +13,7 @@ o Use the potentiometer characterization experiment to visualize by means of LED
 
 o Represent in a table the values of position, voltage, binary word. As an example, your table should look as follows
 
-IMAGE HERE
+!(https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/table.jpeg)
 
 - Task 4
 
