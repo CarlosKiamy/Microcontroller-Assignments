@@ -69,9 +69,9 @@ A switch case was used to manipulate the motor speed. Each value of the variable
 As the variable "i" depends on the switching of button B, it will remain constant until button B is pressed, and only then the speed will change until it reaches its maximum of 100% (i=10) or minimum (i=0), as indicated by the "if" conditions previously established.
 ```
 	  switch(i){
-	  	case 0:
-	  		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0);
-	  	break;
+	  	  case 0:
+	  		  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0);
+	  	  break;
 
 		  case 1:
 			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.1);
