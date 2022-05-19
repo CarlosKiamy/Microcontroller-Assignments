@@ -9,10 +9,12 @@ Button B will increase the speed by 10% each time it is activated.
 
 
 Below is the pinout declared for this assignment.
+
 ![PWM_pinout](https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/PWM_pinout.png)
 
 
 Prescaler and Period value declaration.
+
 ![Prescaler](https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/PrescalerPeriod.png)
 
 Variables used for data transmission via UART.
