@@ -1,127 +1,125 @@
-# PWM Assignment
-The assignment involves the following task:
+# Step Motor Assignment
+A stepper motor will be controlled using a potentiometer as an analog sensing device.
 
-Perform the control of a DC motor to vary the speed by means of two buttons, where the number of presses increases or decreases the PWM by 10 %, starting from speed 0. 
+For stepper motor manipulation with the potentiometer, the on-board ADC is used with 12-bit resolution using 3.3 volts as the cap. The stepper motor driver inputs are connected to the general purpose outputs of the board for signal handling.
 
-Button A will determine the increase or decrease of the motor speed.
-
-Button B will increase the speed by 10% each time it is activated.
+The datasheet for the stepper motor specifies that the motor has 32 steps for each revolution (11.25° each step) on the main rotor. It is worth mentioning that the motor has a gear train with a ratio of 1:64, which means that the output shaft must perform a total of 64*32 = 2048 steps per revolution (0.17578125°).
 
 
 Below is the pinout declared for this assignment.
 
-![PWM_pinout](https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/PWM_pinout.png)
+![StepMotor](https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/StepMotor_pinout.png)
 
 
-Prescaler and Period value declaration.
+Wave drive signal sequence for the stepper motor driver.
 
-![Prescaler](https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/PrescalerPeriod.png)
+![waveDrive](https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/waveDrive.png)
 
 Variables used for data transmission via UART.
 ```
-char msg[20];
-char msgT[20];
+char msg[12]; 					//raw data
+char msgP[12]; 					//step motor "steps"
+char msgAn[20]; 				//motor angle relative to starting point
 ```
 
-Initialization for PWM. The dutyCycle integer will take the value that the TIM pin currently captures. The variables "toggle" and "i" are used for button manipulation.
+Integer variables store variables for sequence, raw data, and steps within the sequence. within the sequence.
 ```
-HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-uint16_t dutyCycle = HAL_TIM_ReadCapturedValue(&htim2, 
-TIM_CHANNEL_1);
-int toggle = 0;
-int i = 0;
+int pasos=0; 					//step motor "steps"
+int raw; 					//Raw Data
+int step=0; 					//Sequences
 ```
 
-Since button A works with 2 states (the value is incremented or decremented), it was configured as a boolean and the integer "toggle" will take its values.
+The float variables store the angle at which the motor is located and the degrees of each step.
 ```
-//toggle A button
-	  if(HAL_GPIO_ReadPin(GPIOA, botonA_Pin)){
-		  toggle = 1;
-	  }
-	  if(!HAL_GPIO_ReadPin(GPIOA, botonA_Pin)){
-		  toggle = 0;
-	  }
-```
-where:
-
-o toggle = 1: Speed Increase
-
-o toggle = 0: Speed Decrease
-
-The following section is the configuration for the B button. Depending on the toggle state, pressing button B will increase or decrease its value by 1 until it reaches 0 or 10. The task calls for 10% increments or decrements of speed each time button B is pressed. This means that we have 10 speed states (1 <= i <= 10) and a total stop (i = 0).
-```
-//increment/decrement buttons
-	  if(toggle==1 && HAL_GPIO_ReadPin(GPIOA, botonB_Pin)==1 && i<10){
-		  ++i;
-	  }
-	  if(toggle==0 && HAL_GPIO_ReadPin(GPIOA, botonB_Pin)==1 && i>0){
-		  --i;
-	  }
- ```
- 
- dutyCycle gets the period set for PWM, which is 999.
- ```
- dutyCycle = __HAL_TIM_GET_AUTORELOAD(&htim2);
- ```
- 
-A switch case was used to manipulate the motor speed. Each value of the variable "i" serves as a speed indicator (for example, if i = 5, this means that the speed will be 50%). For this reason in each case the value of dutyCycle has a decimal multiplier to decrease the value of the maximum speed to the desired percentage. 
-
-As the variable "i" depends on the switching of button B, it will remain constant until button B is pressed, and only then the speed will change until it reaches its maximum of 100% (i=10) or minimum (i=0), as indicated by the "if" conditions previously established.
-```
-	  switch(i){
-	  	case 0:
-	  		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0);
-	  	break;
-
-		  case 1:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.1);
-		  break;
-
-		  case 2:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.2);
-		  break;
-
-		  case 3:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.3);
-		  break;
-
-		  case 4:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.4);
-		  break;
-
-		  case 5:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.5);
-		  break;
-
-		  case 6:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.6);
-		  break;
-
-		  case 7:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.7);
-		  break;
-
-		  case 8:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.8);
-		  break;
-
-		  case 9:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle*0.9);
-		  break;
-
-		  case 10:
-			  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, dutyCycle);
-		  break;
-	  }
+float angulo; 					//Current motor angle/position
+float anguloPaso = 0.17578125; 		        //Number of degrees for each step
 ```
 
-The UART transmitter was only used to corroborate the values of "toggle" and "i". It was digitally corroborated that pressing the A and B buttons had the desired change of values before connecting the motor. A small delay of 100 milliseconds for each duty cycle was added.
+The following code initializes the ADC and stores the raw data inside the "raw" variable, and then prints it out via UART.
 ```
-	  sprintf(msg, "%hu\r\n", i);
-	  sprintf(msgT,"%hu\r\n", toggle);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)msg,  strlen(msg),
-			  	  	    HAL_MAX_DELAY);
-	  HAL_UART_Transmit(&huart2, (uint8_t*)msgT, strlen(msgT),
-			  	  	    HAL_MAX_DELAY);
-	  HAL_Delay(100);
+HAL_ADC_Start(&hadc1);
+HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+raw = HAL_ADC_GetValue(&hadc1);
+
+sprintf(msg, "%hu\r\n", raw);
+HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+```
+Since the ADC has a resolution of 12 bits, the maximum value (in raw decimal) is 4096. This means that, for this activity, the ratio between the digital value of the potentiometer and the motor steps is 2:1.
+
+The following condition makes sure that the raw data and the motor steps stay within the 2:1 ratio, and is only fulfilled if the potentiometer is not within its dead zone (raw != 0). This condition checks if the potentiometer is changing its position in an upward way, so it checks that it is greater than steps.
+
+```
+if(raw/2 >= pasos && raw != 0)
+```
+
+The for is used to perform the sequence of the motor signals, but in a descending way. This is because it is desired that the stepper motor follows the direction taken by the potentiometer. In this case the potentiometer and the motor will go clockwise.
+
+```
+for (step=3; step>=0; step--)
+```
+
+The switch case is used for signal switching for the motor inputs. In order for the motor to be clockwise, the signals must be switched downwards from case 3 to case 0.
+```
+			 switch (step){
+				 case 0:
+					 HAL_GPIO_WritePin(GPIOB, IN1_Pin, GPIO_PIN_SET);    // IN1
+					 HAL_GPIO_WritePin(GPIOB, IN2_Pin, GPIO_PIN_RESET);  // IN2
+					 HAL_GPIO_WritePin(GPIOB, IN3_Pin, GPIO_PIN_RESET);  // IN3
+					 HAL_GPIO_WritePin(GPIOB, IN4_Pin, GPIO_PIN_RESET);  // IN4
+				 break;
+				 case 1:
+					 HAL_GPIO_WritePin(GPIOB, IN1_Pin, GPIO_PIN_RESET);  // IN1
+					 HAL_GPIO_WritePin(GPIOB, IN2_Pin, GPIO_PIN_SET);    // IN2
+					 HAL_GPIO_WritePin(GPIOB, IN3_Pin, GPIO_PIN_RESET);  // IN3
+					 HAL_GPIO_WritePin(GPIOB, IN4_Pin, GPIO_PIN_RESET);  // IN4
+				 break;
+				 case 2:
+					 HAL_GPIO_WritePin(GPIOB, IN1_Pin, GPIO_PIN_RESET);  // IN1
+					 HAL_GPIO_WritePin(GPIOB, IN2_Pin, GPIO_PIN_RESET);  // IN2
+					 HAL_GPIO_WritePin(GPIOB, IN3_Pin, GPIO_PIN_SET);    // IN3
+					 HAL_GPIO_WritePin(GPIOB, IN4_Pin, GPIO_PIN_RESET);  // IN4
+				 break;
+				 case 3:
+					 HAL_GPIO_WritePin(GPIOB, IN1_Pin, GPIO_PIN_RESET);  // IN1
+					 HAL_GPIO_WritePin(GPIOB, IN2_Pin, GPIO_PIN_RESET);  // IN2
+					 HAL_GPIO_WritePin(GPIOB, IN3_Pin, GPIO_PIN_RESET);  // IN3
+					 HAL_GPIO_WritePin(GPIOB, IN4_Pin, GPIO_PIN_SET);    // IN4
+				 break;
+
+```
+Sequence to be followed by the switch case (clockwise):
+
+![StepMotor_clockwise](https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/StepMotor_clockwise.png)
+
+Each case is one step that the motor turns, which means that each cycle that "for" completes is one step that the motor takes. For this reason the variable "pasos" is incremented by 1. To obtain the current angle of the motor, multiply the number of current steps by the number of angle per step. When these variables are obtained, they are put into the char arrays and displayed on the serial port.
+
+```
+			 HAL_Delay(1);
+			 pasos++;
+			 angulo = pasos*anguloPaso;
+
+			 sprintf(msgP, "%hu\r\n", pasos);
+			 HAL_UART_Transmit(&huart2, (uint8_t*)msgP, strlen(msgP), HAL_MAX_DELAY);
+
+			 sprintf(msgAn, "%f\r\n", angulo);
+			 HAL_UART_Transmit(&huart2, (uint8_t*)msgAn, strlen(msgAn), HAL_MAX_DELAY);
+```
+
+The following condition will check if the potentiometer value is falling.
+```
+if(raw/2 <= pasos)
+```
+
+The for cycle will now go in an upward direction so that the stepper motor makes its counterclockwise rotation.
+```
+for (step=0; step<=3; step++)
+```
+Sequence to be followed by the switch case (counterclockwise):
+
+![StepMotor_clockwise](https://github.com/CarlosKiamy/Microcontroller-Assignments/blob/main/img/StepMotor_counterclockwise.png)
+
+If the condition that checks that the potentiometer value is decreasing is met, the motor steps will decrease. For this reason the steps variable is decremented by one unit within this for loop.
+
+```
+pasos--;
 ```
